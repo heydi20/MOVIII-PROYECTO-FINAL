@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_final/navigation/Drawer.dart';
+import 'package:proyecto_final/screens/CategoriasScreen.dart';
 import 'package:proyecto_final/screens/LoginScreen.dart';
 import 'package:proyecto_final/screens/RegisterScreen.dart';
 
@@ -109,6 +110,27 @@ class Cuerpo extends StatelessWidget {
               icon: const Icon(Icons.app_registration),
               label: const Text('Registrarse'),
             ),
+      
+
+      ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.deepPurple,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                minimumSize: const Size(200, 50),
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const CategoriasScreen()),
+                );
+              },
+              icon: const Icon(Icons.category),
+              label: const Text('Categorias'),
+            ),
+            
           ],
         ),
       ),
