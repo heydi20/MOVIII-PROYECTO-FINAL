@@ -1,18 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:proyecto_final/screens/ReproduccionScreen.dart';
 
-class CategoriasScreen extends StatelessWidget {
+class CategoriasScreen extends StatefulWidget {
   const CategoriasScreen({super.key});
+
+  @override
+  State<CategoriasScreen> createState() => _CategoriasScreenState();
+}
+
+class _CategoriasScreenState extends State<CategoriasScreen> {
+  late YoutubePlayerController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = YoutubePlayerController(
+      initialVideoId: 'oyRxxpD3yNw',
+      flags: const YoutubePlayerFlags(
+        autoPlay: true,
+        mute: false,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Películas'),
+        title: Text('Películas'),
         centerTitle: true,
         backgroundColor: const Color.fromARGB(255, 170, 181, 240),
         elevation: 4,
-          actions: [
+        actions: [
           IconButton(
             icon: const Icon(Icons.play_circle_fill),
             tooltip: 'Ir a reproducción',
@@ -20,20 +46,36 @@ class CategoriasScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const ReproduccionScreen(),
+                  builder: (context) => ReproduccionScreen(),
                 ),
               );
             },
           ),
         ],
       ),
-      body: const Peliculas(),
+      body: YoutubePlayerBuilder(
+        player: YoutubePlayer(
+          controller: _controller,
+          showVideoProgressIndicator: true,
+          progressIndicatorColor: Colors.blueAccent,
+        ),
+        builder: (context, player) {
+          return Column(
+            children: [
+              player,
+              const Expanded(child: Peliculas()),
+            ],
+          );
+        },
+      ),
     );
   }
 }
 
+
+
 class Peliculas extends StatelessWidget {
-  const Peliculas({super.key});
+    const Peliculas({super.key});
 
   final List<Map<String, dynamic>> peliculas = const [
     {
@@ -144,6 +186,21 @@ class Peliculas extends StatelessWidget {
             itemBuilder: (context, index) {
               var pelicula = peliculasFiltradas[index];
               return GestureDetector(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text(pelicula['titulo']),
+                      content: Text(pelicula['descripcion']),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text('Cerrar'),
+                        ),
+                      ],
+                    ),
+                  );
+                },
                 child: Container(
                   width: 150,
                   margin: const EdgeInsets.symmetric(horizontal: 8),
