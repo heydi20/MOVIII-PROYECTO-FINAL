@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_final/main.dart';
+import 'package:proyecto_final/screens/CategoriasScreen.dart';
 import 'package:proyecto_final/screens/LoginScreen.dart';
 import 'package:proyecto_final/screens/RegisterScreen.dart';
 
@@ -67,6 +68,17 @@ class MiDrawer extends StatelessWidget {
               );
             },
           ),
+           ListTile(
+            leading: const Icon(Icons.person_add),
+            title: const Text('Categorias'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => CategoriasScreen()),
+              );
+            },
+          ),
 
           ListTile(
             leading: const Icon(Icons.home),
@@ -79,6 +91,9 @@ class MiDrawer extends StatelessWidget {
               );
             },
           ),
+
+
+          
         ],
       ),
     );
