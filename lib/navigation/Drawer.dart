@@ -1,88 +1,105 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_final/main.dart';
 import 'package:proyecto_final/screens/CategoriasScreen.dart';
-import 'package:proyecto_final/screens/LoginScreen.dart';
-import 'package:proyecto_final/screens/RegisterScreen.dart';
+import 'package:proyecto_final/screens/auth/LoginScreen.dart';
+import 'package:proyecto_final/screens/auth/RegisterScreen.dart';
 
 class MiDrawer extends StatelessWidget {
   const MiDrawer({super.key});
 
+  final Color _drawerBackground = const Color(0xFF121212);
+  final Color _purpleGradientStart = const Color(0xFF7B4EFF);
+  final Color _purpleGradientEnd = const Color(0xFF9A67EA);
+  final Color _iconColor = Colors.white70;
+  final Color _textColor = Colors.white70;
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
+      backgroundColor: _drawerBackground,
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
-            decoration: const BoxDecoration(
-              color: Colors.blue,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [_purpleGradientStart, _purpleGradientEnd],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
             ),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
-                children: const [
+                children: [
                   CircleAvatar(
-                    radius: 40,
+                    radius: 44,
                     backgroundColor: Colors.white24,
                     child: Icon(
                       Icons.person,
-                      size: 50,
+                      size: 52,
                       color: Colors.white,
+                      shadows: [
+                        Shadow(
+                          color: _purpleGradientEnd.withOpacity(0.6),
+                          blurRadius: 6,
+                        ),
+                      ],
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 12),
                   Text(
                     'Bienvenido, Usuario',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 20,
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
+                      shadows: [
+                        Shadow(
+                          color: _purpleGradientEnd.withOpacity(0.7),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
                   ),
-                
                 ],
               ),
             ),
           ),
 
-          ListTile(
-            leading: const Icon(Icons.login),
-            title: const Text('Iniciar Sesión'),
+          _buildListTile(
+            context,
+            icon: Icons.login,
+            label: 'Iniciar Sesión',
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const LoginScreen()),
+                MaterialPageRoute(builder: (_) => const Login()),
               );
             },
           ),
 
-          ListTile(
-            leading: const Icon(Icons.person_add),
-            title: const Text('Registrarse'),
+          _buildListTile(
+            context,
+            icon: Icons.person_add,
+            label: 'Registrarse',
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const RegisterScreen()),
-              );
-            },
-          ),
-           ListTile(
-            leading: const Icon(Icons.person_add),
-            title: const Text('Categorias'),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => CategoriasScreen()),
+                MaterialPageRoute(builder: (_) => const Registro()),
               );
             },
           ),
 
-          ListTile(
-            leading: const Icon(Icons.home),
-            title: const Text("Home"),
+        
+
+          _buildListTile(
+            context,
+            icon: Icons.home,
+            label: 'Inicio',
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
@@ -91,11 +108,46 @@ class MiDrawer extends StatelessWidget {
               );
             },
           ),
-
-
-          
         ],
       ),
+    );
+  }
+
+  Widget _buildListTile(BuildContext context,
+      {required IconData icon,
+      required String label,
+      required VoidCallback onTap}) {
+    return ListTile(
+      leading: Icon(
+        icon,
+        color: _iconColor,
+        size: 28,
+        shadows: [
+          Shadow(
+            color: _purpleGradientEnd.withOpacity(0.5),
+            blurRadius: 4,
+          ),
+        ],
+      ),
+      title: Text(
+        label,
+        style: TextStyle(
+          color: _textColor,
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+          shadows: [
+            Shadow(
+              color: _purpleGradientEnd.withOpacity(0.3),
+              blurRadius: 3,
+            ),
+          ],
+        ),
+      ),
+      onTap: onTap,
+      hoverColor: _purpleGradientEnd.withOpacity(0.15),
+      splashColor: _purpleGradientEnd.withOpacity(0.25),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     );
   }
 }
