@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart'; 
 import 'package:proyecto_final/navigation/Drawer.dart';
 import 'package:proyecto_final/screens/CategoriasScreen.dart';
-import 'package:proyecto_final/screens/auth/LoginScreen.dart';
-import 'package:proyecto_final/screens/auth/RegisterScreen.dart';
+import 'package:proyecto_final/auth/LoginScreen.dart';
+import 'package:proyecto_final/auth/RegisterScreen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
