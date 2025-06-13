@@ -9,7 +9,7 @@ class CategoriasScreen extends StatefulWidget {
   State<CategoriasScreen> createState() => _CategoriasScreenState();
 }
 
-class _CategoriasScreenState extends State<CategoriasScreen> 
+class _CategoriasScreenState extends State<CategoriasScreen>
     with TickerProviderStateMixin {
   late YoutubePlayerController _controller;
   late AnimationController _fadeController;
@@ -18,35 +18,42 @@ class _CategoriasScreenState extends State<CategoriasScreen>
   final List<Map<String, dynamic>> peliculasDestacadas = const [
     {
       'titulo': 'Avengers: Endgame',
-      'imagen': 'https://image.tmdb.org/t/p/w500/or06FN3Dka5tukK1e9sl16pB3iy.jpg',
+      'imagen':
+          'https://image.tmdb.org/t/p/w500/or06FN3Dka5tukK1e9sl16pB3iy.jpg',
       'descripcion': 'Los Vengadores se reúnen para revertir el Snap de Thanos',
       'categoria': 'Acción',
       'trailerId': 'TcMBFSGVi1c',
-      'peliculaId': 'PLl99DlL6b4'
+      'peliculaId': 'PLl99DlL6b4',
     },
     {
       'titulo': 'Dune',
-      'imagen': 'https://image.tmdb.org/t/p/w500/d5NXSklXo0qyIYkgV94XAgMIckC.jpg',
-      'descripcion': 'Un joven heredero viaja al planeta más peligroso del universo',
+      'imagen':
+          'https://image.tmdb.org/t/p/w500/d5NXSklXo0qyIYkgV94XAgMIckC.jpg',
+      'descripcion':
+          'Un joven heredero viaja al planeta más peligroso del universo',
       'categoria': 'Ciencia Ficción',
       'trailerId': 'n9xhJrPXop4',
-      'peliculaId': 'uPIEn0M8su0'
+      'peliculaId': 'uPIEn0M8su0',
     },
     {
       'titulo': 'Spider-Man: No Way Home',
-      'imagen': 'https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg',
-      'descripcion': 'Peter Parker desata un multiverso al pedir ayuda a Doctor Strange',
+      'imagen':
+          'https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg',
+      'descripcion':
+          'Peter Parker desata un multiverso al pedir ayuda a Doctor Strange',
       'categoria': 'Superhéroes',
       'trailerId': 'JfVOs4VSpmA',
-      'peliculaId': 'x8-7mHT9edI'
+      'peliculaId': 'x8-7mHT9edI',
     },
     {
       'titulo': 'The Batman',
-      'imagen': 'https://image.tmdb.org/t/p/w500/seyWFgGInaLqW7nOZvu0ZC95rtx.jpg',
-      'descripcion': 'Batman investiga la corrupción en Gotham cuando aparece el Acertijo',
+      'imagen':
+          'https://image.tmdb.org/t/p/w500/seyWFgGInaLqW7nOZvu0ZC95rtx.jpg',
+      'descripcion':
+          'Batman investiga la corrupción en Gotham cuando aparece el Acertijo',
       'categoria': 'Superhéroes',
       'trailerId': 'mqqft2x_Aa4',
-      'peliculaId': 'aS_d0Ayjw4o'
+      'peliculaId': 'aS_d0Ayjw4o',
     },
   ];
 
@@ -55,10 +62,7 @@ class _CategoriasScreenState extends State<CategoriasScreen>
     super.initState();
     _controller = YoutubePlayerController(
       initialVideoId: 'oyRxxpD3yNw',
-      flags: const YoutubePlayerFlags(
-        autoPlay: false,
-        mute: false,
-      ),
+      flags: const YoutubePlayerFlags(autoPlay: false, mute: false),
     );
 
     _fadeController = AnimationController(
@@ -100,7 +104,8 @@ class _CategoriasScreenState extends State<CategoriasScreen>
                   color: Colors.deepPurpleAccent,
                   blurRadius: 10,
                   offset: Offset(0, 0),
-            )],
+                ),
+              ],
             ),
           ),
         ),
@@ -121,7 +126,8 @@ class _CategoriasScreenState extends State<CategoriasScreen>
                   color: Colors.deepPurpleAccent.withOpacity(0.5),
                   blurRadius: 15,
                   offset: const Offset(0, 8),
-            )],
+                ),
+              ],
             ),
             child: IconButton(
               icon: const Icon(Icons.play_circle_fill, color: Colors.white),
@@ -130,7 +136,8 @@ class _CategoriasScreenState extends State<CategoriasScreen>
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ReproduccionScreen(),
+                    builder: (context) =>
+                        VideoPlayerScreen(videoId: 'bLvqoHBptjg'),
                   ),
                 );
               },
@@ -168,13 +175,18 @@ class _CategoriasScreenState extends State<CategoriasScreen>
                         var pelicula = peliculasDestacadas[index];
                         return GestureDetector(
                           onTap: () {
-                            _showMovieOptionsDialog(context, pelicula, [Colors.deepPurpleAccent, Colors.purpleAccent]);
+                            _showMovieOptionsDialog(context, pelicula, [
+                              Colors.deepPurpleAccent,
+                              Colors.purpleAccent,
+                            ]);
                           },
                           child: Container(
                             width: 180,
                             margin: EdgeInsets.only(
                               left: index == 0 ? 20 : 12,
-                              right: index == peliculasDestacadas.length - 1 ? 20 : 0,
+                              right: index == peliculasDestacadas.length - 1
+                                  ? 20
+                                  : 0,
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,7 +197,8 @@ class _CategoriasScreenState extends State<CategoriasScreen>
                                       borderRadius: BorderRadius.circular(15),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.deepPurpleAccent.withOpacity(0.3),
+                                          color: Colors.deepPurpleAccent
+                                              .withOpacity(0.3),
                                           blurRadius: 10,
                                           offset: const Offset(0, 5),
                                         ),
@@ -197,12 +210,17 @@ class _CategoriasScreenState extends State<CategoriasScreen>
                                         pelicula['imagen'],
                                         fit: BoxFit.cover,
                                         width: double.infinity,
-                                        errorBuilder: (context, error, stackTrace) => Container(
-                                          color: Colors.grey[800],
-                                          child: const Center(
-                                            child: Icon(Icons.broken_image, color: Colors.white),
-                                          ),
-                                        ),
+                                        errorBuilder:
+                                            (context, error, stackTrace) =>
+                                                Container(
+                                                  color: Colors.grey[800],
+                                                  child: const Center(
+                                                    child: Icon(
+                                                      Icons.broken_image,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ),
                                       ),
                                     ),
                                   ),
@@ -237,18 +255,18 @@ class _CategoriasScreenState extends State<CategoriasScreen>
             ),
             const SizedBox(height: 10),
             // Lista de categorías
-            Expanded(
-              child: Peliculas(
-                parentController: _controller,
-              ),
-            ),
+            Expanded(child: Peliculas(parentController: _controller)),
           ],
         ),
       ),
     );
   }
 
-  void _showMovieOptionsDialog(BuildContext context, Map<String, dynamic> pelicula, List<Color> gradientColors) {
+  void _showMovieOptionsDialog(
+    BuildContext context,
+    Map<String, dynamic> pelicula,
+    List<Color> gradientColors,
+  ) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -289,10 +307,7 @@ class _CategoriasScreenState extends State<CategoriasScreen>
               Text(
                 pelicula['descripcion'],
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.white,
-                ),
+                style: const TextStyle(fontSize: 14, color: Colors.white),
               ),
               const SizedBox(height: 20),
               const Text(
@@ -323,7 +338,12 @@ class _CategoriasScreenState extends State<CategoriasScreen>
                     ),
                     onPressed: () {
                       Navigator.of(context).pop();
-                      _controller.load(pelicula['trailerId']);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              VideoPlayerScreen(videoId: pelicula['trailerId']),
+                        ),
+                      );
                     },
                     child: const Text(
                       "VER TRAILER",
@@ -351,7 +371,13 @@ class _CategoriasScreenState extends State<CategoriasScreen>
                     ),
                     onPressed: () {
                       Navigator.of(context).pop();
-                      _controller.load(pelicula['peliculaId']);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => VideoPlayerScreen(
+                            videoId: pelicula['peliculaId'],
+                          ),
+                        ),
+                      );
                     },
                     child: const Text(
                       "VER PELÍCULA",
@@ -389,7 +415,7 @@ class _CategoriasScreenState extends State<CategoriasScreen>
 
 class Peliculas extends StatefulWidget {
   final YoutubePlayerController parentController;
-  
+
   const Peliculas({super.key, required this.parentController});
 
   @override
@@ -402,147 +428,170 @@ class _PeliculasState extends State<Peliculas> with TickerProviderStateMixin {
   final List<Map<String, dynamic>> peliculas = const [
     {
       'titulo': 'The Shawshank Redemption',
-      'imagen': 'https://image.tmdb.org/t/p/w500/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg',
+      'imagen':
+          'https://image.tmdb.org/t/p/w500/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg',
       'descripcion': 'La historia de esperanza y amistad en una prisión',
       'categoria': 'Drama',
       'trailerId': '6hB3S9bIaco',
-      'peliculaId': 'PLl99DlL6b4'
+      'peliculaId': 'PLl99DlL6b4',
     },
     {
       'titulo': 'Forrest Gump',
-      'imagen': 'https://image.tmdb.org/t/p/w500/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg',
+      'imagen':
+          'https://image.tmdb.org/t/p/w500/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg',
       'descripcion': 'La extraordinaria vida de un hombre con buen corazón',
       'categoria': 'Drama',
       'trailerId': 'bLvqoHBptjg',
-      'peliculaId': 'uPIEn0M8su0'
+      'peliculaId': 'uPIEn0M8su0',
     },
     {
       'titulo': 'The Pursuit of Happyness',
-      'imagen': 'https://image.tmdb.org/t/p/w500/6dXA5F7YgOpYGiSrL6PIdVPbdPH.jpg',
-      'descripcion': 'Un padre lucha por construir un mejor futuro para su hijo',
+      'imagen':
+          'https://artworks.thetvdb.com/banners/v4/movie/929/posters/6091d88213991.jpg',
+      'descripcion':
+          'Un padre lucha por construir un mejor futuro para su hijo',
       'categoria': 'Drama',
       'trailerId': 'DMOBlEcRuw8',
-      'peliculaId': 'x8-7mHT9edI'
+      'peliculaId': 'x8-7mHT9edI',
     },
     {
       'titulo': 'A Beautiful Mind',
-      'imagen': 'https://image.tmdb.org/t/p/w500/zwzWCmH72OSC9NA0ipoqw5Zjya8.jpg',
+      'imagen':
+          'https://image.tmdb.org/t/p/w500/zwzWCmH72OSC9NA0ipoqw5Zjya8.jpg',
       'descripcion': 'Un genio matemático lucha contra la esquizofrenia',
       'categoria': 'Drama',
       'trailerId': 'YWwAOutgWBQ',
-      'peliculaId': 'aS_d0Ayjw4o'
+      'peliculaId': 'aS_d0Ayjw4o',
     },
     {
       'titulo': 'Green Book',
-      'imagen': 'https://image.tmdb.org/t/p/w500/7BsvSuDQuoqhWmU2fL7W2GOcZHU.jpg',
+      'imagen':
+          'https://image.tmdb.org/t/p/w500/7BsvSuDQuoqhWmU2fL7W2GOcZHU.jpg',
       'descripcion': 'Una amistad improbable durante un viaje por el sur',
       'categoria': 'Drama',
       'trailerId': 'QkZxoko_HC0',
-      'peliculaId': 'R9m5e8gBsws'
+      'peliculaId': 'R9m5e8gBsws',
     },
     {
       'titulo': 'Good Will Hunting',
-      'imagen': 'https://image.tmdb.org/t/p/w500/bABCBKYBK7A5G1x0FzoeoNfuj2.jpg',
+      'imagen':
+          'https://image.tmdb.org/t/p/w500/bABCBKYBK7A5G1x0FzoeoNfuj2.jpg',
       'descripcion': 'Un joven genio debe encontrar su camino en la vida',
       'categoria': 'Drama',
       'trailerId': 'PaZVjZEFkRs',
-      'peliculaId': 'gdkKKlJtT8o'
+      'peliculaId': 'gdkKKlJtT8o',
     },
     {
       'titulo': 'The Hangover',
-      'imagen': 'https://image.tmdb.org/t/p/w500/uluhlXqQpCAMess8S6CwuZbhoCU.jpg',
-      'descripcion': 'Cuatro amigos intentan recordar su loca noche en Las Vegas',
+      'imagen':
+          'https://artworks.thetvdb.com/banners/v4/movie/1257/posters/605df8d29ff70.jpg',
+      'descripcion':
+          'Cuatro amigos intentan recordar su loca noche en Las Vegas',
       'categoria': 'Comedia',
       'trailerId': 'tcdUhdOlz9M',
-      'peliculaId': 'UjJcWWMOhAI'
+      'peliculaId': 'UjJcWWMOhAI',
     },
     {
       'titulo': 'Superbad',
-      'imagen': 'https://image.tmdb.org/t/p/w500/ek8e8txUyUwd2BNqj6lFEerJfbq.jpg',
+      'imagen':
+          'https://image.tmdb.org/t/p/w500/ek8e8txUyUwd2BNqj6lFEerJfbq.jpg',
       'descripcion': 'Dos mejores amigos en una aventura épica por alcohol',
       'categoria': 'Comedia',
       'trailerId': '4eaZ_48ZYog',
-      'peliculaId': 'MNpoTxeydiY'
+      'peliculaId': 'MNpoTxeydiY',
     },
     {
       'titulo': 'Anchorman',
-      'imagen': 'https://image.tmdb.org/t/p/w500/zJPLiJ7ASDaLXkUBGGjCN55XDWY.jpg',
+      'imagen':
+          'https://artworks.thetvdb.com/banners/v4/movie/1766/posters/68050130a7108.jpg',
       'descripcion': 'Un presentador machista se enfrenta a una reportera',
       'categoria': 'Comedia',
       'trailerId': 'NJQ4qEWm9lU',
-      'peliculaId': '8BBF3bLfhjs'
+      'peliculaId': '8BBF3bLfhjs',
     },
     {
       'titulo': 'Step Brothers',
-      'imagen': 'https://image.tmdb.org/t/p/w500/wJYfuoUTRj4yNlSbNWAGKhBL9z7.jpg',
+      'imagen':
+          'https://artworks.thetvdb.com/banners/movies/790/posters/790.jpg',
       'descripcion': 'Dos hermanastros adultos causan caos en casa',
       'categoria': 'Comedia',
       'trailerId': 'LbH4Xx8VBfg',
-      'peliculaId': 'PcDXTCz9bKI'
+      'peliculaId': 'PcDXTCz9bKI',
     },
     {
       'titulo': 'Dumb and Dumber',
-      'imagen': 'https://image.tmdb.org/t/p/w500/m8gPPKThRMKqLjCjvl3nP4Y8BqI.jpg',
+      'imagen':
+          'https://artworks.thetvdb.com/banners/v4/movie/1121/posters/67f5f85b41b74.jpg',
       'descripcion': 'Dos amigos idiotas emprenden un viaje desastroso',
       'categoria': 'Comedia',
       'trailerId': 'l13yPhimE3o',
-      'peliculaId': 'LBfJrm0VQ4Q'
+      'peliculaId': 'LBfJrm0VQ4Q',
     },
     {
       'titulo': 'Zoolander',
-      'imagen': 'https://image.tmdb.org/t/p/w500/qdrbStAuvVqs2gBpvvHNtBZ8wGz.jpg',
+      'imagen':
+          'https://artworks.thetvdb.com/banners/movies/2885/posters/2885.jpg',
       'descripcion': 'Un modelo masculino debe salvar al mundo de la moda',
       'categoria': 'Comedia',
       'trailerId': 'E6egGKDsQyU',
-      'peliculaId': 'BkdBmZP7Rlw'
+      'peliculaId': 'BkdBmZP7Rlw',
     },
     {
       'titulo': 'The Conjuring',
-      'imagen': 'https://image.tmdb.org/t/p/w500/wVYREutTvI2tmxr6ujrHT704wGF.jpg',
-      'descripcion': 'Investigadores paranormales ayudan a una familia aterrorizada',
+      'imagen':
+          'https://image.tmdb.org/t/p/w500/wVYREutTvI2tmxr6ujrHT704wGF.jpg',
+      'descripcion':
+          'Investigadores paranormales ayudan a una familia aterrorizada',
       'categoria': 'Terror',
       'trailerId': 'k10ETZ41q5o',
-      'peliculaId': 'ejMMn0t58Lc'
+      'peliculaId': 'ejMMn0t58Lc',
     },
     {
       'titulo': 'Hereditary',
-      'imagen': 'https://image.tmdb.org/t/p/w500/lHV8HHlhwNup2VbpiACtlKzaGIQ.jpg',
+      'imagen':
+          'https://image.tmdb.org/t/p/w500/lHV8HHlhwNup2VbpiACtlKzaGIQ.jpg',
       'descripcion': 'Una familia devastada descubre secretos aterradores',
       'categoria': 'Terror',
       'trailerId': 'V6wWKNij_1M',
-      'peliculaId': 'YHxcDbai7aU'
+      'peliculaId': 'YHxcDbai7aU',
     },
     {
       'titulo': 'A Quiet Place',
-      'imagen': 'https://image.tmdb.org/t/p/w500/nAU74GmpUk7t5iklEp3bufwDq4n.jpg',
-      'descripcion': 'Una familia vive en silencio para evitar criaturas mortales',
+      'imagen':
+          'https://image.tmdb.org/t/p/w500/nAU74GmpUk7t5iklEp3bufwDq4n.jpg',
+      'descripcion':
+          'Una familia vive en silencio para evitar criaturas mortales',
       'categoria': 'Terror',
       'trailerId': 'WR7cc5t7tv8',
-      'peliculaId': 'XEMwSdne6UE'
+      'peliculaId': 'XEMwSdne6UE',
     },
     {
       'titulo': 'Get Out',
-      'imagen': 'https://image.tmdb.org/t/p/w500/tFXcEccSQMf3lfhfXKSU9iRBpa3.jpg',
-      'descripcion': 'Un joven descubre secretos perturbadores en casa de su novia',
+      'imagen':
+          'https://image.tmdb.org/t/p/w500/tFXcEccSQMf3lfhfXKSU9iRBpa3.jpg',
+      'descripcion':
+          'Un joven descubre secretos perturbadores en casa de su novia',
       'categoria': 'Terror',
       'trailerId': 'DzfpyUB60YY',
-      'peliculaId': 'sRfnevzM9kQ'
+      'peliculaId': 'sRfnevzM9kQ',
     },
     {
       'titulo': 'It',
-      'imagen': 'https://image.tmdb.org/t/p/w500/9E2y5Q7WlCVNEhP5GiVTjhEhx1o.jpg',
+      'imagen':
+          'https://image.tmdb.org/t/p/w500/9E2y5Q7WlCVNEhP5GiVTjhEhx1o.jpg',
       'descripcion': 'Un grupo de niños enfrenta a un payaso demoníaco',
       'categoria': 'Terror',
       'trailerId': 'FnCdOQsX5kc',
-      'peliculaId': 'hEH1bRF62MM'
+      'peliculaId': 'hEH1bRF62MM',
     },
     {
       'titulo': 'The Babadook',
-      'imagen': 'https://image.tmdb.org/t/p/w500/lWANJ2tTCDIbJbdMAICrw1WTY9l.jpg',
+      'imagen':
+          'https://artworks.thetvdb.com/banners/v4/movie/1878/posters/670a8e90085c2.jpg',
       'descripcion': 'Una madre soltera lucha contra una presencia siniestra',
       'categoria': 'Terror',
       'trailerId': 'k5WQZzDRVtw',
-      'peliculaId': 'sz9GqLhHE7M'
+      'peliculaId': 'sz9GqLhHE7M',
     },
   ];
 
@@ -587,10 +636,12 @@ class _PeliculasState extends State<Peliculas> with TickerProviderStateMixin {
   }
 
   Widget _buildSeccionPeliculas(BuildContext context, String categoria) {
-    var peliculasFiltradas = peliculas.where((p) => p['categoria'] == categoria).toList();
+    var peliculasFiltradas = peliculas
+        .where((p) => p['categoria'] == categoria)
+        .toList();
 
     List<Color> gradientColors;
-    
+
     switch (categoria) {
       case 'Drama':
         gradientColors = [Colors.blue.shade600, Colors.blue.shade400];
@@ -669,12 +720,16 @@ class _PeliculasState extends State<Peliculas> with TickerProviderStateMixin {
                           child: Image.network(
                             pelicula['imagen'],
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) => Container(
-                              color: Colors.grey[800],
-                              child: const Center(
-                                child: Icon(Icons.broken_image, color: Colors.white),
-                              ),
-                            ),
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                                  color: Colors.grey[800],
+                                  child: const Center(
+                                    child: Icon(
+                                      Icons.broken_image,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
                           ),
                         ),
                       ),
@@ -701,7 +756,11 @@ class _PeliculasState extends State<Peliculas> with TickerProviderStateMixin {
     );
   }
 
-  void _showMovieOptionsDialog(BuildContext context, Map<String, dynamic> pelicula, List<Color> gradientColors) {
+  void _showMovieOptionsDialog(
+    BuildContext context,
+    Map<String, dynamic> pelicula,
+    List<Color> gradientColors,
+  ) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -742,10 +801,7 @@ class _PeliculasState extends State<Peliculas> with TickerProviderStateMixin {
               Text(
                 pelicula['descripcion'],
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.white,
-                ),
+                style: const TextStyle(fontSize: 14, color: Colors.white),
               ),
               const SizedBox(height: 20),
               const Text(
@@ -776,7 +832,12 @@ class _PeliculasState extends State<Peliculas> with TickerProviderStateMixin {
                     ),
                     onPressed: () {
                       Navigator.of(context).pop();
-                      widget.parentController.load(pelicula['trailerId']);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              VideoPlayerScreen(videoId: pelicula['trailerId']),
+                        ),
+                      );
                     },
                     child: const Text(
                       "VER TRAILER",
@@ -804,7 +865,13 @@ class _PeliculasState extends State<Peliculas> with TickerProviderStateMixin {
                     ),
                     onPressed: () {
                       Navigator.of(context).pop();
-                      widget.parentController.load(pelicula['peliculaId']);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => VideoPlayerScreen(
+                            videoId: pelicula['peliculaId'],
+                          ),
+                        ),
+                      );
                     },
                     child: const Text(
                       "VER PELÍCULA",

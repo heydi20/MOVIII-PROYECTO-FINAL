@@ -1,91 +1,50 @@
 import 'package:flutter/material.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
-class ReproduccionScreen extends StatelessWidget {
-  const ReproduccionScreen({super.key});
+class VideoPlayerScreen extends StatefulWidget {
+  final String videoId;  // Recibimos el ID de Youtube
+
+  const VideoPlayerScreen({Key? key, required this.videoId}) : super(key: key);
+
+  @override
+  _VideoPlayerScreenState createState() => _VideoPlayerScreenState();
+}
+
+class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
+  late YoutubePlayerController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = YoutubePlayerController(
+      initialVideoId: widget.videoId,
+      flags: const YoutubePlayerFlags(
+        autoPlay: true,
+        mute: false,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title:  Text('Reproducción de Película'),
-        backgroundColor: Colors.black87,
+        title: const Text('Reproduciendo'),
+        backgroundColor: Colors.deepPurpleAccent,
       ),
-      body: Column(
-        children: [
-          Container(
-            margin:  EdgeInsets.all(16),
-            height: 220,
-            decoration: BoxDecoration(
-              color: Colors.grey[900],
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.white24),
-            ),
-            child:  Center(
-              child: Icon(Icons.play_circle_fill, size: 64, color: Colors.white70),
-            ),
-          ),
-
-          Padding(
-            padding:  EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children:  [
-                Icon(Icons.fast_rewind, color: Colors.white, size: 32),
-                Icon(Icons.pause_circle_filled, color: Colors.white, size: 48),
-                Icon(Icons.fast_forward, color: Colors.white, size: 32),
-              ],
-            ),
-          ),
-
-          // Volumen
-          Padding(
-            padding:  EdgeInsets.symmetric(horizontal: 32),
-            child: Row(
-              children: [
-                 Icon(Icons.volume_up, color: Colors.white),
-                Expanded(
-                  child: Slider(
-                    value: 0.5,
-                    onChanged: (_) {},
-                    activeColor: Colors.tealAccent,
-                    inactiveColor: Colors.white24,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          Padding(
-            padding:  EdgeInsets.symmetric(horizontal: 32.0, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                DropdownButton<String>(
-                  dropdownColor: Colors.grey[900],
-                  style: const TextStyle(color: Colors.white),
-                  value: 'HD',
-                  items: const [
-                    DropdownMenuItem(value: 'SD', child: Text('Calidad: SD')),
-                    DropdownMenuItem(value: 'HD', child: Text('Calidad: HD')),
-                    DropdownMenuItem(value: 'FHD', child: Text('Calidad: FHD')),
-                  ],
-                  onChanged: (_) {},
-                ),
-                DropdownButton<String>(
-                  dropdownColor: Colors.grey[900],
-                  style:  TextStyle(color: Colors.white),
-                  value: 'Español',
-                  items:  [
-                    DropdownMenuItem(value: 'Español', child: Text('Sub: Español')),
-                    DropdownMenuItem(value: 'Inglés', child: Text('Sub: Inglés')),
-                  ],
-                  onChanged: (_) {},
-                ),
-              ],
-            ),
-          ),
-        ],
+      body: Center(
+        child: YoutubePlayer(
+          controller: _controller,
+          showVideoProgressIndicator: true,
+          progressIndicatorColor: Colors.deepPurpleAccent,
+        ),
       ),
     );
   }
