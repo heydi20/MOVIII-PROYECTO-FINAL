@@ -400,7 +400,6 @@ class _PeliculasState extends State<Peliculas> with TickerProviderStateMixin {
   late AnimationController _slideController;
 
   final List<Map<String, dynamic>> peliculas = const [
-    // DRAMA - 6 películas
     {
       'titulo': 'The Shawshank Redemption',
       'imagen': 'https://image.tmdb.org/t/p/w500/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg',
@@ -449,8 +448,6 @@ class _PeliculasState extends State<Peliculas> with TickerProviderStateMixin {
       'trailerId': 'PaZVjZEFkRs',
       'peliculaId': 'gdkKKlJtT8o'
     },
-
-    // COMEDIA - 6 películas
     {
       'titulo': 'The Hangover',
       'imagen': 'https://image.tmdb.org/t/p/w500/uluhlXqQpCAMess8S6CwuZbhoCU.jpg',
@@ -499,8 +496,6 @@ class _PeliculasState extends State<Peliculas> with TickerProviderStateMixin {
       'trailerId': 'E6egGKDsQyU',
       'peliculaId': 'BkdBmZP7Rlw'
     },
-
-    // TERROR - 6 películas
     {
       'titulo': 'The Conjuring',
       'imagen': 'https://image.tmdb.org/t/p/w500/wVYREutTvI2tmxr6ujrHT704wGF.jpg',
