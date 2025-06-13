@@ -5,19 +5,17 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class Login extends StatelessWidget {
   const Login({super.key});
 
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    backgroundColor: const Color.fromARGB(255, 39, 38, 38), 
-    appBar: AppBar(
-      backgroundColor: const Color.fromARGB(255, 39, 38, 38), 
-      iconTheme: const IconThemeData(
-        color: Colors.white, 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 39, 38, 38),
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 39, 38, 38),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
-    ),
-    body: formularioLogin(context),
-  );
-}
+      body: formularioLogin(context),
+    );
+  }
 }
 
 Widget formularioLogin(BuildContext context) {
@@ -71,8 +69,10 @@ Widget formularioLogin(BuildContext context) {
                   borderSide: BorderSide.none,
                 ),
                 labelText: "Correo",
-                labelStyle: TextStyle(color: Colors.deepPurpleAccent.shade100),
-                prefixIcon: const Icon(Icons.email_outlined, color: Colors.deepPurpleAccent),
+                labelStyle:
+                    TextStyle(color: Colors.deepPurpleAccent.shade100),
+                prefixIcon:
+                    const Icon(Icons.email_outlined, color: Colors.deepPurpleAccent),
               ),
               keyboardType: TextInputType.emailAddress,
             ),
@@ -88,8 +88,10 @@ Widget formularioLogin(BuildContext context) {
                   borderSide: BorderSide.none,
                 ),
                 labelText: "Contraseña",
-                labelStyle: TextStyle(color: Colors.deepPurpleAccent.shade100),
-                prefixIcon: const Icon(Icons.lock_outline, color: Colors.deepPurpleAccent),
+                labelStyle:
+                    TextStyle(color: Colors.deepPurpleAccent.shade100),
+                prefixIcon:
+                    const Icon(Icons.lock_outline, color: Colors.deepPurpleAccent),
               ),
               obscureText: true,
             ),
@@ -140,7 +142,6 @@ Widget formularioLogin(BuildContext context) {
   );
 }
 
-//SUPABASE
 Future<void> login(String correo, String contrasenia, BuildContext context) async {
   if (correo.isEmpty || contrasenia.isEmpty) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -159,15 +160,23 @@ Future<void> login(String correo, String contrasenia, BuildContext context) asyn
 
     final User? user = res.user;
 
-    if (user != null) {
-     
+    if (user != null && user.userMetadata != null) {
+      final metadata = user.userMetadata!;
+      final edad = int.tryParse(metadata['edad']?.toString() ?? '0') ?? 0;
+      final gustos = List<String>.from(metadata['gustos'] ?? []);
+
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const CategoriasScreen()),
+        MaterialPageRoute(
+          builder: (context) => CategoriasScreen(
+            edad: edad,
+            generosFavoritos: gustos,
+          ),
+        ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error: No se pudo iniciar sesión')),
+        const SnackBar(content: Text('No se encontraron datos de usuario')),
       );
     }
   } catch (e) {

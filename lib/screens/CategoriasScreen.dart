@@ -3,7 +3,14 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:proyecto_final/screens/ReproduccionScreen.dart';
 
 class CategoriasScreen extends StatefulWidget {
-  const CategoriasScreen({super.key});
+  final int edad;
+  final List<String> generosFavoritos;
+
+  const CategoriasScreen({
+    super.key,
+    required this.edad,
+    required this.generosFavoritos,
+  });
 
   @override
   State<CategoriasScreen> createState() => _CategoriasScreenState();
@@ -11,6 +18,167 @@ class CategoriasScreen extends StatefulWidget {
 
 class _CategoriasScreenState extends State<CategoriasScreen> {
   late YoutubePlayerController _controller;
+
+  final List<Map<String, dynamic>> peliculas = [
+    // Acción
+    {
+      'titulo': 'Avengers: Endgame',
+      'imagen': 'https://image.tmdb.org/t/p/w500/or06FN3Dka5tukK1e9sl16pB3iy.jpg',
+      'descripcion': 'Los Vengadores se unen para revertir el Snap de Thanos',
+      'categoria': 'Populares',
+      'genero': 'Acción',
+      'paraMayores': false,
+    },
+    {
+      'titulo': 'Deadpool',
+      'imagen': 'https://image.tmdb.org/t/p/w500/1DPmUzUo5eA4rM5ZljO4vm3ebDT.jpg',
+      'descripcion': 'Superhéroe irreverente con humor negro',
+      'categoria': 'Populares',
+      'genero': 'Acción',
+      'paraMayores': true,
+    },
+    {
+      'titulo': 'John Wick',
+      'imagen': 'https://image.tmdb.org/t/p/w500/ziEuG1essDuWuC5lpWUaw1uXY2O.jpg',
+      'descripcion': 'Asesino retirado vuelve a la acción',
+      'categoria': 'Tendencias',
+      'genero': 'Acción',
+      'paraMayores': true,
+    },
+    // Animación
+    {
+      'titulo': 'Toy Story',
+      'imagen': 'https://image.tmdb.org/t/p/w500/uXDfjJbdP4ijW5hWSBrPrlKpxab.jpg',
+      'descripcion': 'Las aventuras de juguetes que cobran vida',
+      'categoria': 'Nuevas Llegadas',
+      'genero': 'Animación',
+      'paraMayores': false,
+    },
+    {
+      'titulo': 'Soul',
+      'imagen': 'https://image.tmdb.org/t/p/w500/hm58Jw4Lw8OIeECIq5qyPYhAeRJ.jpg',
+      'descripcion': 'Un músico con una segunda oportunidad',
+      'categoria': 'Populares',
+      'genero': 'Animación',
+      'paraMayores': false,
+    },
+    {
+      'titulo': 'Saul Gone',
+      'imagen': 'https://image.tmdb.org/t/p/w500/7F2Y2reCJyK2Bt4cvM9Uhzk1R1.jpg',
+      'descripcion': 'Película animada para adultos',
+      'categoria': 'Populares',
+      'genero': 'Animación',
+      'paraMayores': true,
+    },
+    // Fantasía
+    {
+      'titulo': 'Harry Potter y la Piedra Filosofal',
+      'imagen': 'https://image.tmdb.org/t/p/w500/eWRT4fpiL5tIucV8MGbZ9FvAPaW.jpg',
+      'descripcion': 'Un niño descubre que es mago',
+      'categoria': 'Tendencias',
+      'genero': 'Fantasía',
+      'paraMayores': false,
+    },
+    {
+      'titulo': 'El Laberinto del Fauno',
+      'imagen': 'https://image.tmdb.org/t/p/w500/4iGmGkN81CSq7FvTXN02nOV0GmE.jpg',
+      'descripcion': 'Oscura historia de fantasía para adultos',
+      'categoria': 'Populares',
+      'genero': 'Fantasía',
+      'paraMayores': true,
+    },
+    {
+      'titulo': 'El Señor de los Anillos: La Comunidad del Anillo',
+      'imagen': 'https://image.tmdb.org/t/p/w500/6oom5QYQ2yQTMJIbnvbkBL9cHo6.jpg',
+      'descripcion': 'Un viaje épico para destruir un anillo',
+      'categoria': 'Nuevas Llegadas',
+      'genero': 'Fantasía',
+      'paraMayores': false,
+    },
+    // Aventura
+    {
+      'titulo': 'Jumanji: Bienvenidos a la Jungla',
+      'imagen': 'https://image.tmdb.org/t/p/w500/d9nBoowhjiiYc4FBNtQkPY7c11H.jpg',
+      'descripcion': 'Un juego mágico los lleva a una aventura',
+      'categoria': 'Populares',
+      'genero': 'Aventura',
+      'paraMayores': false,
+    },
+    {
+      'titulo': 'Indiana Jones y el Reino de la Calavera de Cristal',
+      'imagen': 'https://image.tmdb.org/t/p/w500/rxRpbeI6WqgeJeXjSWYg63s4zju.jpg',
+      'descripcion': 'Indiana Jones en una peligrosa misión',
+      'categoria': 'Tendencias',
+      'genero': 'Aventura',
+      'paraMayores': true,
+    },
+    {
+      'titulo': 'Piratas del Caribe',
+      'imagen': 'https://image.tmdb.org/t/p/w500/2dKqFGsH6AfB9F9V6RztIxA5bBa.jpg',
+      'descripcion': 'Aventuras de piratas en el Caribe',
+      'categoria': 'Populares',
+      'genero': 'Aventura',
+      'paraMayores': false,
+    },
+    // Comedia
+    {
+      'titulo': 'La Gran Apuesta',
+      'imagen': 'https://image.tmdb.org/t/p/w500/8HH3xbpT5RQk6EsIMtXqTIl6NK5.jpg',
+      'descripcion': 'Comedia dramática sobre la crisis financiera',
+      'categoria': 'Populares',
+      'genero': 'Comedia',
+      'paraMayores': true,
+    },
+    {
+      'titulo': 'Mi Pobre Angelito',
+      'imagen': 'https://image.tmdb.org/t/p/w500/ciHqTHnfkFqsTPTHZKdQ2ZBBOVZ.jpg',
+      'descripcion': 'Un niño defiende su casa en Navidad',
+      'categoria': 'Nuevas Llegadas',
+      'genero': 'Comedia',
+      'paraMayores': false,
+    },
+    {
+      'titulo': 'Superbad',
+      'imagen': 'https://image.tmdb.org/t/p/w500/ek8e8txUyUwd2BNqj6lFEerJfbq.jpg',
+      'descripcion': 'Comedia juvenil sobre la amistad',
+      'categoria': 'Populares',
+      'genero': 'Comedia',
+      'paraMayores': true,
+    },
+    // Familiar
+    {
+      'titulo': 'Coco',
+      'imagen': 'https://image.tmdb.org/t/p/w500/eKi8dIrr8voobbaGzDpe8w0PVbC.jpg',
+      'descripcion': 'Un niño busca sus raíces en el Día de Muertos',
+      'categoria': 'Populares',
+      'genero': 'Familiar',
+      'paraMayores': false,
+    },
+    {
+      'titulo': 'The Boy and the Beast',
+      'imagen': 'https://image.tmdb.org/t/p/w500/j6QYpcz1IhF5ZXZ3hNKl6gCjChq.jpg',
+      'descripcion': 'Historia de aventura y crecimiento para adultos',
+      'categoria': 'Tendencias',
+      'genero': 'Familiar',
+      'paraMayores': true,
+    },
+    {
+      'titulo': 'Up',
+      'imagen': 'https://image.tmdb.org/t/p/w500/pthWTCy5ij2v6MwqoD3AcP3vRbC.jpg',
+      'descripcion': 'Una aventura llena de emociones',
+      'categoria': 'Nuevas Llegadas',
+      'genero': 'Familiar',
+      'paraMayores': false,
+    },
+  ];
+
+  final List<String> generosPermitidos = [
+    'Animación',
+    'Fantasía',
+    'Aventura',
+    'Comedia',
+    'Familiar',
+  ];
 
   @override
   void initState() {
@@ -32,9 +200,11 @@ class _CategoriasScreenState extends State<CategoriasScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool esMayorEdad = widget.edad >= 18;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Películas'),
+        title: const Text('Películas'),
         centerTitle: true,
         backgroundColor: const Color.fromARGB(255, 170, 181, 240),
         elevation: 4,
@@ -63,7 +233,24 @@ class _CategoriasScreenState extends State<CategoriasScreen> {
           return Column(
             children: [
               player,
-              const Expanded(child: Peliculas()),
+              if (!esMayorEdad)
+                Container(
+                  width: double.infinity,
+                  color: Colors.redAccent.withOpacity(0.1),
+                  padding: const EdgeInsets.all(12),
+                  child: const Text(
+                    "🔒 Algunas películas están restringidas por tu edad.",
+                    style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              Expanded(
+                child: Peliculas(
+                  edad: widget.edad,
+                  generosFavoritos: widget.generosFavoritos,
+                  peliculas: peliculas,
+                  generosPermitidos: generosPermitidos,
+                ),
+              ),
             ],
           );
         },
@@ -72,91 +259,26 @@ class _CategoriasScreenState extends State<CategoriasScreen> {
   }
 }
 
-
-
 class Peliculas extends StatelessWidget {
-    const Peliculas({super.key});
+  final int edad;
+  final List<String> generosFavoritos;
+  final List<Map<String, dynamic>> peliculas;
+  final List<String> generosPermitidos;
 
-  final List<Map<String, dynamic>> peliculas = const [
-    {
-      'titulo': 'Avengers: Endgame',
-      'imagen': 'https://image.tmdb.org/t/p/w500/or06FN3Dka5tukK1e9sl16pB3iy.jpg',
-      'descripcion': 'Los Vengadores se unen para revertir el Snap de Thanos',
-      'categoria': 'Populares'
-    },
-    {
-      'titulo': 'Spider-Man: No Way Home',
-      'imagen': 'https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg',
-      'descripcion': 'Spider-Man y el multiverso',
-      'categoria': 'Populares'
-    },
-    {
-      'titulo': 'The Dark Knight',
-      'imagen': 'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg',
-      'descripcion': 'Batman enfrenta al Joker en Gotham City',
-      'categoria': 'Populares'
-    },
-    {
-      'titulo': 'Inception',
-      'imagen': 'https://image.tmdb.org/t/p/w500/edv5CZvWj09upOsy2Y6IwDhK8bt.jpg',
-      'descripcion': 'Un ladrón roba secretos del subconsciente',
-      'categoria': 'Populares'
-    },
-    {
-      'titulo': 'The Batman',
-      'imagen': 'https://image.tmdb.org/t/p/w500/seyWFgGInaLqW7nOZvu0ZC95rtx.jpg',
-      'descripcion': 'Batman investiga la corrupción en Gotham City',
-      'categoria': 'Tendencias'
-    },
-    {
-      'titulo': 'John Wick 4',
-      'imagen': 'https://m.media-amazon.com/images/I/81J1DaRKzUL._AC_UF894,1000_QL80_.jpg',
-      'descripcion': 'John Wick lucha contra una organización global',
-      'categoria': 'Tendencias'
-    },
-    {
-      'titulo': 'Top Gun: Maverick',
-      'imagen': 'https://image.tmdb.org/t/p/w500/62HCnUTziyWcpDaBO2i1DX17ljH.jpg',
-      'descripcion': 'El regreso de Maverick a la acción aérea',
-      'categoria': 'Tendencias'
-    },
-    {
-      'titulo': 'Fast X',
-      'imagen': 'https://image.tmdb.org/t/p/w500/fiVW06jE7z9YnO4trhaMEdclSiC.jpg',
-      'descripcion': 'La familia se enfrenta a su mayor amenaza',
-      'categoria': 'Tendencias'
-    },
-    {
-      'titulo': 'Dune',
-      'imagen': 'https://image.tmdb.org/t/p/w500/d5NXSklXo0qyIYkgV94XAgMIckC.jpg',
-      'descripcion': 'Adaptación de la novela de ciencia ficción',
-      'categoria': 'Nuevas Llegadas'
-    },
-    {
-      'titulo': 'The Marvels',
-      'imagen': 'https://lumiere-a.akamaihd.net/v1/images/56245l11a_goat_philippines_apac_poster_1sht_e357e03a.jpeg?region=0%2C0%2C2592%2C3840',
-      'descripcion': 'Carol Danvers se une a nuevos héroes',
-      'categoria': 'Nuevas Llegadas'
-    },
-    {
-      'titulo': 'Wish',
-      'imagen': 'https://lumiere-a.akamaihd.net/v1/images/image_579e2622.jpeg?region=0,0,540,810',
-      'descripcion': 'Una historia mágica sobre deseos y esperanza',
-      'categoria': 'Nuevas Llegadas'
-    },
-    {
-      'titulo': 'Wonka',
-      'imagen': 'https://image.tmdb.org/t/p/w500/qhb1qOilapbapxWQn9jtRCMwXJF.jpg',
-      'descripcion': 'Orígenes del famoso chocolatero',
-      'categoria': 'Nuevas Llegadas'
-    },
-  ];
+  const Peliculas({
+    super.key,
+    required this.edad,
+    required this.generosFavoritos,
+    required this.peliculas,
+    required this.generosPermitidos,
+  });
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         children: [
+          _buildRecomendadas(context),
           _buildSeccionPeliculas(context, 'Populares'),
           _buildSeccionPeliculas(context, 'Tendencias'),
           _buildSeccionPeliculas(context, 'Nuevas Llegadas'),
@@ -165,16 +287,49 @@ class Peliculas extends StatelessWidget {
     );
   }
 
-  Widget _buildSeccionPeliculas(BuildContext context, String categoria) {
-    var peliculasFiltradas = peliculas.where((p) => p['categoria'] == categoria).toList();
+  Widget _buildRecomendadas(BuildContext context) {
+    final esMayor = edad >= 18;
+    final List<Map<String, dynamic>> recomendadas = [];
 
+    for (var genero in generosPermitidos) {
+      final peliMenor = peliculas.firstWhere(
+        (p) => p['genero'] == genero && p['paraMayores'] == false,
+        orElse: () => {},
+      );
+      final peliMayor = peliculas.firstWhere(
+        (p) => p['genero'] == genero && p['paraMayores'] == true,
+        orElse: () => {},
+      );
+
+      if (peliMenor.isNotEmpty) recomendadas.add(peliMenor);
+      if (peliMayor.isNotEmpty && esMayor) recomendadas.add(peliMayor);
+    }
+
+    if (recomendadas.isEmpty) return const SizedBox();
+
+    return _buildCarrusel(context, "🎯 Recomendado para ti", recomendadas);
+  }
+
+  Widget _buildSeccionPeliculas(BuildContext context, String categoria) {
+    final esMayor = edad >= 18;
+    final filtradas = peliculas.where((p) {
+      return p['categoria'] == categoria &&
+          (esMayor || p['paraMayores'] == false);
+    }).toList();
+
+    if (filtradas.isEmpty) return const SizedBox();
+
+    return _buildCarrusel(context, categoria, filtradas);
+  }
+
+  Widget _buildCarrusel(BuildContext context, String titulo, List<Map<String, dynamic>> data) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.all(12.0),
           child: Text(
-            categoria,
+            titulo,
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
@@ -182,9 +337,9 @@ class Peliculas extends StatelessWidget {
           height: 220,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            itemCount: peliculasFiltradas.length,
+            itemCount: data.length,
             itemBuilder: (context, index) {
-              var pelicula = peliculasFiltradas[index];
+              var pelicula = data[index];
               return GestureDetector(
                 onTap: () {
                   showDialog(
@@ -213,7 +368,7 @@ class Peliculas extends StatelessWidget {
                           pelicula['imagen'],
                           height: 150,
                           width: 150,
-                          fit: BoxFit.cover,
+                          fit: BoxFit.contain, // <-- Cambiado para mostrar imagen completa
                           errorBuilder: (context, error, stackTrace) => Container(
                             height: 150,
                             width: 150,
