@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 
 class Registro extends StatefulWidget {
   const Registro({super.key});
@@ -11,47 +13,29 @@ class Registro extends StatefulWidget {
 class _RegistroState extends State<Registro> with SingleTickerProviderStateMixin {
   final TextEditingController _correo = TextEditingController();
   final TextEditingController _contrasenia = TextEditingController();
-  final TextEditingController _confirmarContrasenia = TextEditingController();
-  final TextEditingController _nombreCompleto = TextEditingController();
-  final TextEditingController _nombreUsuario = TextEditingController();
+  final TextEditingController _nombre = TextEditingController();
   final TextEditingController _edad = TextEditingController();
-  final TextEditingController _pais = TextEditingController();
-
-  final List<String> _generosMayores = [
-    "Acción", "Comedia", "Drama", "Terror", "Ciencia ficción", "Romance", "Suspenso", "Crimen"
-  ];
-  final List<String> _generosMenores = [
-    "Animación", "Fantasía", "Aventura", "Comedia", "Familiar"
-  ];
-
-  final Set<String> _generosSeleccionados = {};
+  final TextEditingController _telefono = TextEditingController();
   String _genero = 'Masculino';
-  bool _aceptoTerminos = false;
   bool _isLoading = false;
+  XFile? imagen;
 
   late AnimationController _animController;
   late Animation<double> _scaleAnimation;
 
   final Color _primaryColor = const Color(0xFF7B4EFF);
 
-  List<String> get _generosDisponibles {
-    final edad = int.tryParse(_edad.text.trim());
-    if (edad != null && edad >= 18) {
-      return _generosMayores;
-    } else {
-      return _generosMenores;
-    }
-  }
-
   @override
   void initState() {
     super.initState();
+
     _animController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 150),
       lowerBound: 0.9,
       upperBound: 1.0,
     );
+
     _scaleAnimation = CurvedAnimation(
       parent: _animController,
       curve: Curves.easeInOut,
@@ -62,11 +46,9 @@ class _RegistroState extends State<Registro> with SingleTickerProviderStateMixin
   void dispose() {
     _correo.dispose();
     _contrasenia.dispose();
-    _confirmarContrasenia.dispose();
-    _nombreCompleto.dispose();
-    _nombreUsuario.dispose();
+    _nombre.dispose();
     _edad.dispose();
-    _pais.dispose();
+    _telefono.dispose();
     _animController.dispose();
     super.dispose();
   }
@@ -74,38 +56,16 @@ class _RegistroState extends State<Registro> with SingleTickerProviderStateMixin
   Future<void> registrarse() async {
     final correo = _correo.text.trim();
     final contrasenia = _contrasenia.text;
-    final confirmarContrasenia = _confirmarContrasenia.text;
 
-    if (correo.isEmpty ||
-        contrasenia.isEmpty ||
-        confirmarContrasenia.isEmpty ||
-        _nombreCompleto.text.isEmpty ||
-        _nombreUsuario.text.isEmpty ||
-        _edad.text.isEmpty ||
-        _pais.text.isEmpty ||
-        _generosSeleccionados.isEmpty ||
-        !_aceptoTerminos) {
+    if (correo.isEmpty || contrasenia.isEmpty || _nombre.text.isEmpty || _edad.text.isEmpty || _telefono.text.isEmpty) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor completa todos los campos')),
       );
       return;
     }
 
-    if (contrasenia != confirmarContrasenia) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Las contraseñas no coinciden')),
-      );
-      return;
-    }
-
-    final int? edadEntero = int.tryParse(_edad.text.trim());
-    if (edadEntero == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Edad inválida')),
-      );
-      return;
-    }
-
+    if (!mounted) return;
     setState(() {
       _isLoading = true;
     });
@@ -121,36 +81,111 @@ class _RegistroState extends State<Registro> with SingleTickerProviderStateMixin
       final user = res.user;
 
       if (user != null) {
-        // Insertar en tabla personalizada
+        String? imageUrl;
+
+        if (imagen != null) {
+          imageUrl = await subirImagen(imagen!);
+        }
+
         await supabase.from('usuarios').insert({
           'id': user.id,
-          'correo': user.email,
-          'nombre': _nombreCompleto.text.trim(),
-          'usuario': _nombreUsuario.text.trim(),
-          'edad': edadEntero,
+          'nombre': _nombre.text.trim(),
+          'edad': int.tryParse(_edad.text.trim()),
+          'telefono': _telefono.text.trim(),
           'genero': _genero,
-          'pais': _pais.text.trim(),
-          'gustos': _generosSeleccionados.toList(),
+          'avatar_url': imageUrl,
         });
+
+        if (!mounted) return;
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Registro exitoso para ${user.email}')),
         );
+
+        if (!mounted) return;
         Navigator.pop(context);
       } else {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Error: No se pudo registrar')),
         );
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al registrar: $e')),
       );
     } finally {
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
       });
     }
+  }
+
+  Future<String?> subirImagen(XFile image) async {
+    final supabase = Supabase.instance.client;
+
+    try {
+      final avatarFile = File(image.path);
+      final String fileName = 'avatars/avatar_${DateTime.now().millisecondsSinceEpoch}.png';
+
+      final response = await supabase.storage
+          .from('user-images') 
+          .upload(fileName, avatarFile);
+
+      final imageUrl = supabase.storage.from('user-images').getPublicUrl(fileName);
+      return imageUrl;
+    } catch (e) {
+      print('Error al subir imagen: $e');
+      return null;
+    }
+  }
+
+  Future<void> seleccionarImagen() async {
+    final picker = ImagePicker();
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.grey[900],
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_library, color: Colors.white),
+                title: const Text("Seleccionar desde galería", style: TextStyle(color: Colors.white)),
+                onTap: () async {
+                  final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+                  if (pickedFile != null) {
+                    setState(() {
+                      imagen = pickedFile;
+                    });
+                  }
+                  Navigator.of(context).pop();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera_alt, color: Colors.white),
+                title: const Text("Tomar una foto", style: TextStyle(color: Colors.white)),
+                onTap: () async {
+                  final pickedFile = await picker.pickImage(source: ImageSource.camera);
+                  if (pickedFile != null) {
+                    setState(() {
+                      imagen = pickedFile;
+                    });
+                  }
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -161,7 +196,9 @@ class _RegistroState extends State<Registro> with SingleTickerProviderStateMixin
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 39, 38, 38),
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(
+          color: Colors.white,
+        ),
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -184,7 +221,7 @@ class _RegistroState extends State<Registro> with SingleTickerProviderStateMixin
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  "Regístrate",
+                  "Registrate",
                   style: TextStyle(
                     fontSize: 36,
                     color: _primaryColor,
@@ -199,93 +236,88 @@ class _RegistroState extends State<Registro> with SingleTickerProviderStateMixin
                     ],
                   ),
                 ),
-                const SizedBox(height: 28),
-                _styledTextField(controller: _nombreCompleto, label: "Nombre completo", icon: Icons.person, color: _primaryColor),
-                const SizedBox(height: 20),
-                _styledTextField(controller: _nombreUsuario, label: "Nombre de usuario", icon: Icons.account_circle, color: _primaryColor),
-                const SizedBox(height: 20),
+                  const SizedBox(height: 22),
+                _styledTextField(
+                  controller: _nombre,
+                  label: "Nombre completo",
+                  icon: Icons.person_outline,
+                  color: _primaryColor,
+                ),
+                const SizedBox(height: 22),
                 _styledTextField(
                   controller: _edad,
                   label: "Edad",
-                  icon: Icons.cake,
+                  icon: Icons.calendar_today_outlined,
                   keyboardType: TextInputType.number,
                   color: _primaryColor,
-                  onChanged: (value) {
+                ),
+                const SizedBox(height: 22),
+                _styledTextField(
+                  controller: _telefono,
+                  label: "Teléfono",
+                  icon: Icons.phone_outlined,
+                  keyboardType: TextInputType.phone,
+                  color: _primaryColor,
+                ),
+                    const SizedBox(height: 22),
+                DropdownButtonFormField<String>(
+                  value: _genero,
+                  onChanged: (String? newValue) {
                     setState(() {
-                      _generosSeleccionados.clear();
+                      _genero = newValue!;
                     });
                   },
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    Text("Género:", style: TextStyle(color: Colors.white70)),
-                    const SizedBox(width: 10),
-                    DropdownButton<String>(
-                      value: _genero,
-                      dropdownColor: Colors.grey[850],
-                      iconEnabledColor: _primaryColor,
-                      style: const TextStyle(color: Colors.white),
-                      items: ["Masculino", "Femenino", "Otro"]
-                          .map((gen) => DropdownMenuItem(value: gen, child: Text(gen)))
-                          .toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          _genero = value!;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                _styledTextField(controller: _pais, label: "País", icon: Icons.public, color: _primaryColor),
-                const SizedBox(height: 20),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text("Géneros favoritos:", style: TextStyle(color: Colors.white70, fontSize: 16)),
-                ),
-                Column(
-                  children: _generosDisponibles.map((genero) {
-                    return CheckboxListTile(
-                      value: _generosSeleccionados.contains(genero),
-                      onChanged: (selected) {
-                        setState(() {
-                          if (selected == true) {
-                            _generosSeleccionados.add(genero);
-                          } else {
-                            _generosSeleccionados.remove(genero);
-                          }
-                        });
-                      },
-                      activeColor: _primaryColor,
-                      title: Text(genero, style: TextStyle(color: Colors.white)),
+                  items: <String>['Masculino', 'Femenino', 'Otro']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value, style: TextStyle(color: _primaryColor)),
                     );
                   }).toList(),
+                  decoration: InputDecoration(
+                    labelText: 'Género',
+                    labelStyle: TextStyle(color: _primaryColor),
+                    prefixIcon: Icon(Icons.transgender_outlined, color: _primaryColor),
+                    filled: true,
+                    fillColor: Colors.grey[850],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(28),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  dropdownColor: Colors.grey[850],
+                ),
+
+                const SizedBox(height: 28),
+                _styledTextField(
+                  controller: _correo,
+                  label: "Correo electrónico",
+                  icon: Icons.email_outlined,
+                  keyboardType: TextInputType.emailAddress,
+                  color: _primaryColor,
+                ),
+                const SizedBox(height: 22),
+                _styledTextField(
+                  controller: _contrasenia,
+                  label: "Contraseña",
+                  icon: Icons.lock_outline,
+                  obscureText: true,
+                  color: _primaryColor,
+                ),
+                const SizedBox(height: 38),
+
+                FilledButton.icon(
+                  onPressed: seleccionarImagen,
+                  label: const Text("Elegir imagen de perfil"),
+                  icon: const Icon(Icons.add_a_photo),
                 ),
                 const SizedBox(height: 20),
-                _styledTextField(controller: _correo, label: "Correo electrónico", icon: Icons.email_outlined, keyboardType: TextInputType.emailAddress, color: _primaryColor),
+
+                imagen != null
+                    ? Image.file(File(imagen!.path), width: 100, height: 100)
+                    : const Text("No se ha seleccionado imagen"),
+
                 const SizedBox(height: 20),
-                _styledTextField(controller: _contrasenia, label: "Contraseña", icon: Icons.lock_outline, obscureText: true, color: _primaryColor),
-                const SizedBox(height: 20),
-                _styledTextField(controller: _confirmarContrasenia, label: "Confirmar contraseña", icon: Icons.lock_reset, obscureText: true, color: _primaryColor),
-                const SizedBox(height: 18),
-                Row(
-                  children: [
-                    Checkbox(
-                      value: _aceptoTerminos,
-                      activeColor: _primaryColor,
-                      onChanged: (value) {
-                        setState(() {
-                          _aceptoTerminos = value!;
-                        });
-                      },
-                    ),
-                    Expanded(
-                      child: Text('Acepto los términos y condiciones', style: TextStyle(color: Colors.white70)),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 26),
                 ScaleTransition(
                   scale: _scaleAnimation,
                   child: SizedBox(
@@ -297,7 +329,7 @@ class _RegistroState extends State<Registro> with SingleTickerProviderStateMixin
                           : () async {
                               await _animController.forward();
                               await _animController.reverse();
-                              await registrarse();
+                              registrarse();
                             },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: _primaryColor,
@@ -308,7 +340,9 @@ class _RegistroState extends State<Registro> with SingleTickerProviderStateMixin
                         ),
                       ),
                       child: _isLoading
-                          ? const CircularProgressIndicator(color: Colors.white)
+                          ? const CircularProgressIndicator(
+                              color: Colors.white,
+                            )
                           : const Text(
                               "Registrarse",
                               style: TextStyle(
@@ -323,7 +357,9 @@ class _RegistroState extends State<Registro> with SingleTickerProviderStateMixin
                 ),
                 const SizedBox(height: 24),
                 TextButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
                   child: Text(
                     "¿Ya tienes cuenta? Inicia sesión",
                     style: TextStyle(
@@ -356,7 +392,6 @@ class _RegistroState extends State<Registro> with SingleTickerProviderStateMixin
     bool obscureText = false,
     TextInputType keyboardType = TextInputType.text,
     required Color color,
-    Function(String)? onChanged,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -376,7 +411,6 @@ class _RegistroState extends State<Registro> with SingleTickerProviderStateMixin
         keyboardType: keyboardType,
         style: const TextStyle(color: Colors.white),
         cursorColor: color,
-        onChanged: onChanged,
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.symmetric(vertical: 18),
           prefixIcon: Icon(icon, color: color.withOpacity(0.9)),

@@ -10,7 +10,11 @@ dependencies:
   flutter:
     sdk: flutter
   supabase_flutter: ^2.9.1
-  youtube_player_flutter: ^8.1.1
+  youtube_player_flutter: 9.1.1
+  image_picker: ^0.8.5+3
+  flutter_inappwebview: 6.1.5
+
+
 
 dev_dependencies:
   flutter_test:
