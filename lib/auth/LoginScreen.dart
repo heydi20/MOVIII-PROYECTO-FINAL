@@ -14,289 +14,160 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
   final TextEditingController _contrasenia = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   
+  late AnimationController _animController;
   late AnimationController _fadeController;
-  late AnimationController _slideController;
-  late AnimationController _bounceController;
+  late AnimationController _shimmerController;
+  late AnimationController _pulseController;
   
+  late Animation<double> _scaleAnimation;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
-  late Animation<double> _bounceAnimation;
+  late Animation<double> _shimmerAnimation;
+  late Animation<double> _pulseAnimation;
   
   bool _isPasswordVisible = false;
   bool _isLoading = false;
   bool _rememberMe = false;
 
+  // Paleta de colores cinematográfica consistente con registro
   final Color _backgroundColor = const Color(0xFF0A0A0A);
   final Color _primaryPurple = const Color(0xFF6C63FF);
   final Color _secondaryPurple = const Color(0xFF9D50BB);
   final Color _accentColor = const Color(0xFFFF6B9D);
   final Color _cardColor = const Color(0xFF1A1A1A);
+  final Color _goldAccent = const Color(0xFFFFD700);
 
   @override
   void initState() {
     super.initState();
-    
+    _initializeAnimations();
+  }
+
+  void _initializeAnimations() {
+    _animController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+      lowerBound: 0.95,
+      upperBound: 1.0,
+    );
+
     _fadeController = AnimationController(
+      vsync: this,
       duration: const Duration(milliseconds: 1200),
+    );
+
+    _shimmerController = AnimationController(
       vsync: this,
-    );
-    
-    _slideController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 2000),
+    )..repeat();
+
+    _pulseController = AnimationController(
       vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat(reverse: true);
+
+    _scaleAnimation = CurvedAnimation(
+      parent: _animController,
+      curve: Curves.elasticOut,
     );
-    
-    _bounceController = AnimationController(
-      duration: const Duration(milliseconds: 800),
-      vsync: this,
+
+    _fadeAnimation = CurvedAnimation(
+      parent: _fadeController,
+      curve: Curves.easeInOut,
     );
-    
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
-    );
-    
+
     _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.3),
+      begin: const Offset(0, 0.8),
       end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _slideController, curve: Curves.elasticOut));
-    
-    _bounceAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _bounceController, curve: Curves.bounceOut),
-    );
-    
-    // Iniciar animaciones
-    _bounceController.forward();
-    Future.delayed(const Duration(milliseconds: 200), () {
-      _fadeController.forward();
-    });
-    Future.delayed(const Duration(milliseconds: 400), () {
-      _slideController.forward();
-    });
+    ).animate(CurvedAnimation(
+      parent: _fadeController,
+      curve: Curves.easeOutCubic,
+    ));
+
+    _shimmerAnimation = Tween<double>(
+      begin: -2.0,
+      end: 2.0,
+    ).animate(CurvedAnimation(
+      parent: _shimmerController,
+      curve: Curves.easeInOut,
+    ));
+
+    _pulseAnimation = Tween<double>(
+      begin: 0.8,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _pulseController,
+      curve: Curves.easeInOut,
+    ));
+
+    _fadeController.forward();
   }
 
   @override
   void dispose() {
     _correo.dispose();
     _contrasenia.dispose();
+    _animController.dispose();
     _fadeController.dispose();
-    _slideController.dispose();
-    _bounceController.dispose();
+    _shimmerController.dispose();
+    _pulseController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
-      backgroundColor: _backgroundColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: Container(
-          margin: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            gradient: LinearGradient(
-              colors: [
-                Colors.white.withOpacity(0.1),
-                Colors.white.withOpacity(0.05),
-              ],
-            ),
-            border: Border.all(
-              color: Colors.white.withOpacity(0.2),
-              width: 1,
-            ),
-          ),
-          child: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ),
-        title: ShaderMask(
-          shaderCallback: (bounds) => LinearGradient(
-            colors: [_primaryPurple, _accentColor],
-          ).createShader(bounds),
-          child: const Text(
-            'Iniciar Sesión',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
-              fontSize: 18,
-            ),
-          ),
-        ),
-        centerTitle: true,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                _backgroundColor,
-                _primaryPurple.withOpacity(0.1),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
-      ),
       body: Container(
-        width: double.infinity,
-        height: double.infinity,
         decoration: BoxDecoration(
           gradient: RadialGradient(
-            center: const Alignment(0, -0.5),
+            center: Alignment.topCenter,
             radius: 1.5,
             colors: [
-              _primaryPurple.withOpacity(0.15),
-              _secondaryPurple.withOpacity(0.08),
+              _primaryPurple.withOpacity(0.1),
               _backgroundColor,
+              _cardColor,
               _backgroundColor,
             ],
+            stops: const [0.0, 0.3, 0.7, 1.0],
           ),
         ),
-        child: Stack(
-          children: [
-            // Elementos decorativos
-            _buildFloatingElements(),
-            
-            // Formulario principal
-            _buildLoginForm(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFloatingElements() {
-    return Stack(
-      children: [
-        // Círculos flotantes
-        TweenAnimationBuilder(
-          duration: const Duration(seconds: 4),
-          tween: Tween<double>(begin: 0, end: 1),
-          builder: (context, value, child) {
-            return Positioned(
-              top: 100 + (15 * value),
-              right: -40 + (20 * value),
-              child: Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [
-                      _primaryPurple.withOpacity(0.2),
-                      Colors.transparent,
-                    ],
-                  ),
+        child: SafeArea(
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: SlideTransition(
+              position: _slideAnimation,
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    _buildBackButton(),
+                    const SizedBox(height: 20),
+                    _buildHeader(),
+                    const SizedBox(height: 30),
+                    Container(
+                      margin: const EdgeInsets.all(16),
+                      child: _buildForm(size),
+                    ),
+                  ],
                 ),
               ),
-            );
-          },
-        ),
-        
-        TweenAnimationBuilder(
-          duration: const Duration(seconds: 5),
-          tween: Tween<double>(begin: 0, end: 1),
-          builder: (context, value, child) {
-            return Positioned(
-              bottom: 150 - (20 * value),
-              left: -50 + (15 * value),
-              child: Container(
-                width: 150,
-                height: 150,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [
-                      _accentColor.withOpacity(0.15),
-                      Colors.transparent,
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _buildLoginForm() {
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Logo/Icono animado
-              ScaleTransition(
-                scale: _bounceAnimation,
-                child: _buildLoginIcon(),
-              ),
-              
-              const SizedBox(height: 40),
-              
-              // Título con animación
-              FadeTransition(
-                opacity: _fadeAnimation,
-                child: _buildTitle(),
-              ),
-              
-              const SizedBox(height: 40),
-              
-              // Formulario
-              SlideTransition(
-                position: _slideAnimation,
-                child: _buildFormCard(),
-              ),
-              
-              const SizedBox(height: 30),
-              
-              // Botón de login
-              SlideTransition(
-                position: _slideAnimation,
-                child: _buildLoginButton(),
-              ),
-              
-              const SizedBox(height: 20),
-              
-              // Enlaces adicionales
-              FadeTransition(
-                opacity: _fadeAnimation,
-                child: _buildFooterLinks(),
-              ),
-            ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildLoginIcon() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: LinearGradient(
-          colors: [
-            _primaryPurple.withOpacity(0.3),
-            _accentColor.withOpacity(0.3),
-          ],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: _primaryPurple.withOpacity(0.4),
-            blurRadius: 25,
-            spreadRadius: 5,
-          ),
-        ],
-      ),
+  Widget _buildBackButton() {
+    return Align(
+      alignment: Alignment.centerLeft,
       child: Container(
-        padding: const EdgeInsets.all(15),
+        margin: const EdgeInsets.only(left: 16),
         decoration: BoxDecoration(
-          shape: BoxShape.circle,
+          borderRadius: BorderRadius.circular(12),
           gradient: LinearGradient(
             colors: [
               Colors.white.withOpacity(0.1),
@@ -308,370 +179,477 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
             width: 1,
           ),
         ),
-        child: Icon(
-          Icons.account_circle_rounded,
-          size: 50,
-          color: Colors.white,
-        ),
+        
       ),
     );
   }
 
-  Widget _buildTitle() {
+
+
+  Widget _buildHeader() {
     return Column(
       children: [
-        ShaderMask(
-          shaderCallback: (bounds) => LinearGradient(
-            colors: [_primaryPurple, _accentColor, Colors.white],
-            stops: const [0.0, 0.6, 1.0],
-          ).createShader(bounds),
-          child: const Text(
-            'Bienvenid@ de vuelta',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-              letterSpacing: 1.2,
-            ),
-            textAlign: TextAlign.center,
-          ),
+       
+        
+        // Título con animación shimmer
+        AnimatedBuilder(
+          animation: _shimmerAnimation,
+          builder: (context, child) {
+            return ShaderMask(
+              shaderCallback: (bounds) {
+                return LinearGradient(
+                  colors: [
+                    Colors.white.withOpacity(0.8),
+                    _goldAccent,
+                    Colors.white.withOpacity(0.8),
+                  ],
+                  stops: [
+                    (_shimmerAnimation.value - 0.5).clamp(0.0, 1.0),
+                    _shimmerAnimation.value.clamp(0.0, 1.0),
+                    (_shimmerAnimation.value + 0.5).clamp(0.0, 1.0),
+                  ],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ).createShader(bounds);
+              },
+              child: const Text(
+                "¡Bienvenid@ de vuelta!",
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            );
+          },
         ),
         const SizedBox(height: 8),
         Text(
-          'Ingresa a tu cuenta para continuar',
+          "Tu cine personal te ha extrañado 🎬",
           style: TextStyle(
-            fontSize: 16,
-            color: Colors.grey[400],
-            fontWeight: FontWeight.w400,
+            fontSize: 18,
+            color: Colors.grey[300],
+            fontStyle: FontStyle.italic,
           ),
-          textAlign: TextAlign.center,
         ),
       ],
     );
   }
 
-  Widget _buildFormCard() {
+  Widget _buildForm(Size size) {
+    return Form(
+      key: _formKey,
+      child: Container(
+        padding: const EdgeInsets.all(28),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              _cardColor.withOpacity(0.9),
+              _cardColor.withOpacity(0.7),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(30),
+          border: Border.all(
+            color: _primaryPurple.withOpacity(0.4),
+            width: 2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: _primaryPurple.withOpacity(0.2),
+              blurRadius: 30,
+              spreadRadius: 5,
+              offset: const Offset(0, 15),
+            ),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              blurRadius: 20,
+              spreadRadius: 3,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            // Campo de correo
+            _buildStyledTextField(
+              controller: _correo,
+              label: "Correo electrónico",
+              icon: Icons.email_rounded,
+              keyboardType: TextInputType.emailAddress,
+              color: _primaryPurple,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Por favor ingresa tu correo';
+                }
+                if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                  return 'Ingresa un correo válido';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 25),
+            
+            // Campo de contraseña
+            _buildPasswordField(),
+            const SizedBox(height: 20),
+            
+            // Recordar datos y olvido de contraseña
+            _buildRememberAndForgot(),
+            const SizedBox(height: 40),
+            
+            // Botón de login
+            _buildLoginButton(size),
+            const SizedBox(height: 25),
+            
+            // Divisor
+            _buildDivider(),
+            const SizedBox(height: 20),
+            
+            // Botones sociales
+            _buildSocialButtons(),
+            const SizedBox(height: 25),
+            
+            // Enlace de registro
+            _buildRegisterLink(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStyledTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    TextInputType keyboardType = TextInputType.text,
+    required Color color,
+    String? Function(String?)? validator,
+  }) {
     return Container(
-      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
         gradient: LinearGradient(
           colors: [
-            Colors.white.withOpacity(0.08),
-            Colors.white.withOpacity(0.03),
+            _cardColor.withOpacity(0.9),
+            _cardColor.withOpacity(0.6),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.1),
-          width: 1,
-        ),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: color.withOpacity(0.4), width: 2),
         boxShadow: [
           BoxShadow(
-            color: _primaryPurple.withOpacity(0.2),
-            blurRadius: 20,
-            spreadRadius: 1,
+            color: color.withOpacity(0.1),
+            blurRadius: 15,
+            spreadRadius: 2,
           ),
         ],
       ),
-      child: Column(
-        children: [
-          // Campo de correo
-          _buildCustomTextField(
-            controller: _correo,
-            label: 'Correo electrónico',
-            icon: Icons.email_rounded,
-            keyboardType: TextInputType.emailAddress,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Por favor ingresa tu correo';
-              }
-              if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                return 'Ingresa un correo válido';
-              }
-              return null;
-            },
+      child: TextFormField(
+        controller: controller,
+        keyboardType: keyboardType,
+        validator: validator,
+        style: const TextStyle(color: Colors.white, fontSize: 16),
+        cursorColor: color,
+        decoration: InputDecoration(
+          contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+          prefixIcon: Icon(icon, color: color, size: 24),
+          labelText: label,
+          labelStyle: TextStyle(color: color.withOpacity(0.9), fontSize: 16),
+          border: InputBorder.none,
+          errorStyle: TextStyle(color: Colors.red[300]),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPasswordField() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            _cardColor.withOpacity(0.9),
+            _cardColor.withOpacity(0.6),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: _secondaryPurple.withOpacity(0.4), width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: _secondaryPurple.withOpacity(0.1),
+            blurRadius: 15,
+            spreadRadius: 2,
           ),
-          
-          const SizedBox(height: 20),
-          
-          // Campo de contraseña
-          _buildCustomTextField(
-            controller: _contrasenia,
-            label: 'Contraseña',
-            icon: Icons.lock_rounded,
-            isPassword: true,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Por favor ingresa tu contraseña';
-              }
-              if (value.length < 6) {
-                return 'La contraseña debe tener al menos 6 caracteres';
-              }
-              return null;
-            },
+        ],
+      ),
+      child: TextFormField(
+        controller: _contrasenia,
+        obscureText: !_isPasswordVisible,
+        style: const TextStyle(color: Colors.white, fontSize: 16),
+        cursorColor: _secondaryPurple,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Por favor ingresa tu contraseña';
+          }
+          if (value.length < 6) {
+            return 'La contraseña debe tener al menos 6 caracteres';
+          }
+          return null;
+        },
+        decoration: InputDecoration(
+          contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+
+          prefixIcon: Icon(Icons.lock_rounded, color: _secondaryPurple, size: 24),
+          suffixIcon: IconButton(
+            icon: Icon(
+              _isPasswordVisible ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+              color: _secondaryPurple.withOpacity(0.8),
+              size: 24,
+            ),
+            onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
           ),
-          
-          const SizedBox(height: 16),
-          
-          // Recordar contraseña
-          Row(
-            children: [
-              SizedBox(
-                width: 20,
-                height: 20,
-                child: Checkbox(
-                  value: _rememberMe,
-                  onChanged: (value) => setState(() => _rememberMe = value ?? false),
-                  activeColor: _primaryPurple,
-                  checkColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'Recordar mis datos',
+          labelText: "Contraseña",
+          labelStyle: TextStyle(color: _secondaryPurple.withOpacity(0.9), fontSize: 16),
+          border: InputBorder.none,
+          errorStyle: TextStyle(color: Colors.red[300]),
+        ),
+      ),
+    );
+  }
+
+Widget _buildRememberAndForgot() {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      Expanded(
+        child: Row(
+          children: [
+            Checkbox(
+              value: _rememberMe,
+              activeColor: _primaryPurple,
+              onChanged: (value) {
+                setState(() {
+                  _rememberMe = value ?? false;
+                });
+              },
+            ),
+            Flexible(
+              child: Text(
+                "Recordarme",
                 style: TextStyle(
-                  color: Colors.grey[400],
+                  color: Colors.grey[300],
                   fontSize: 14,
                 ),
+                overflow: TextOverflow.ellipsis,
               ),
-              const Spacer(),
-              TextButton(
-                onPressed: () {
-                  // Implementar olvido de contraseña
-                  _showForgotPasswordDialog();
+            ),
+          ],
+        ),
+      ),
+      TextButton(
+        onPressed: () {
+          // Acción para recuperar contraseña
+        },
+        child: Text(
+          "¿Olvidaste tu contraseña?",
+          style: TextStyle(
+            color: _accentColor,
+            fontSize: 14,
+          ),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+    ],
+  );
+}
+
+
+  Widget _buildLoginButton(Size size) {
+    return ScaleTransition(
+      scale: _scaleAnimation,
+      child: Container(
+        width: size.width,
+        height: 65,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [_primaryPurple, _secondaryPurple, _accentColor],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: _primaryPurple.withOpacity(0.5),
+              blurRadius: 25,
+              spreadRadius: 3,
+              offset: const Offset(0, 10),
+            ),
+            BoxShadow(
+              color: _accentColor.withOpacity(0.3),
+              blurRadius: 35,
+              spreadRadius: 8,
+              offset: const Offset(0, 15),
+            ),
+          ],
+        ),
+        child: ElevatedButton(
+          onPressed: _isLoading
+              ? null
+              : () async {
+                  await _animController.forward();
+                  await _animController.reverse();
+                  _handleLogin();
                 },
-                child: Text(
-                  '¿Olvidaste tu contraseña?',
-                  style: TextStyle(
-                    color: _accentColor,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCustomTextField({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    TextInputType? keyboardType,
-    bool isPassword = false,
-    String? Function(String?)? validator,
-  }) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: keyboardType,
-      obscureText: isPassword ? !_isPasswordVisible : false,
-      validator: validator,
-      style: const TextStyle(color: Colors.white, fontSize: 16),
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: Colors.white.withOpacity(0.05),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide.none,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(
-            color: Colors.white.withOpacity(0.1),
-            width: 1,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(
-            color: _primaryPurple,
-            width: 2,
-          ),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(
-            color: Colors.redAccent,
-            width: 1,
-          ),
-        ),
-        labelText: label,
-        labelStyle: TextStyle(color: Colors.grey[400]),
-        prefixIcon: Icon(icon, color: _primaryPurple),
-        suffixIcon: isPassword
-            ? IconButton(
-                icon: Icon(
-                  _isPasswordVisible ? Icons.visibility_off_rounded : Icons.visibility_rounded,
-                  color: Colors.grey[400],
-                ),
-                onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
-              )
-            : null,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      ),
-    );
-  }
-
-  Widget _buildLoginButton() {
-    return Container(
-      width: double.infinity,
-      height: 56,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(28),
-        gradient: LinearGradient(
-          colors: [_primaryPurple, _secondaryPurple],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: _primaryPurple.withOpacity(0.4),
-            blurRadius: 20,
-            spreadRadius: 2,
-            offset: const Offset(0, 8),
-          ),
-          BoxShadow(
-            color: _primaryPurple.withOpacity(0.3),
-            blurRadius: 30,
-            spreadRadius: 3,
-            offset: const Offset(0, 12),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(28),
-          onTap: _isLoading ? null : _handleLogin,
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(28),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.3),
-                width: 1,
-              ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.transparent,
+            shadowColor: Colors.transparent,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
             ),
-            child: Center(
-              child: _isLoading
-                  ? const SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2,
-                      ),
-                    )
-                  : const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.login_rounded,
-                          color: Colors.white,
-                          size: 22,
-                        ),
-                        SizedBox(width: 12),
-                        Text(
-                          'Iniciar Sesión',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                            letterSpacing: 0.8,
-                          ),
-                        ),
-                      ],
+          ),
+          child: _isLoading
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 3,
                     ),
-            ),
-          ),
+                    SizedBox(width: 15),
+                    Text(
+                      "Ingresando a tu cine...",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(Icons.login_rounded, color: Colors.white, size: 28),
+                    SizedBox(width: 12),
+                    Text(
+                      "¡ENTRAR A MI CINE!",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                  ],
+                ),
         ),
       ),
     );
   }
 
-  Widget _buildFooterLinks() {
-    return Column(
+  Widget _buildDivider() {
+    return Row(
       children: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: RichText(
-            text: TextSpan(
-              style: TextStyle(color: Colors.grey[400], fontSize: 14),
-              children: [
-                const TextSpan(text: '¿No tienes cuenta? '),
-                TextSpan(
-                  text: 'Regístrate aquí',
-                  style: TextStyle(
-                    color: _accentColor,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
+        Expanded(child: Divider(color: Colors.grey[600], thickness: 1)),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Text(
+            'O continúa con',
+            style: TextStyle(color: Colors.grey[400], fontSize: 14),
           ),
         ),
-        
-        const SizedBox(height: 20),
-        
-        // Línea divisoria
-        Row(
-          children: [
-            Expanded(child: Divider(color: Colors.grey[700], thickness: 1)),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                'O continúa con',
-                style: TextStyle(color: Colors.grey[500], fontSize: 12),
-              ),
-            ),
-            Expanded(child: Divider(color: Colors.grey[700], thickness: 1)),
-          ],
+        Expanded(child: Divider(color: Colors.grey[600], thickness: 1)),
+      ],
+    );
+  }
+
+  Widget _buildSocialButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _buildSocialButton(
+          icon: Icons.g_mobiledata_rounded,
+          label: 'Google',
+          gradient: LinearGradient(colors: [Colors.red[400]!, Colors.orange[400]!]),
         ),
-        
-        const SizedBox(height: 20),
-        
-        // Botones sociales
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _buildSocialButton(Icons.g_mobiledata_rounded, 'Google'),
-            const SizedBox(width: 16),
-            _buildSocialButton(Icons.facebook_rounded, 'Facebook'),
-          ],
+        const SizedBox(width: 16),
+        _buildSocialButton(
+          icon: Icons.facebook_rounded,
+          label: 'Facebook',
+          gradient: LinearGradient(colors: [Colors.blue[600]!, Colors.blue[800]!]),
         ),
       ],
     );
   }
 
-  Widget _buildSocialButton(IconData icon, String label) {
+  Widget _buildSocialButton({
+    required IconData icon,
+    required String label,
+    required LinearGradient gradient,
+  }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       decoration: BoxDecoration(
+        gradient: gradient.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Colors.grey[700]!,
+          color: gradient.colors.first.withOpacity(0.4),
           width: 1,
         ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: Colors.grey[400], size: 20),
+          Icon(icon, color: gradient.colors.first, size: 20),
           const SizedBox(width: 8),
           Text(
             label,
             style: TextStyle(
-              color: Colors.grey[400],
+              color: gradient.colors.first,
               fontSize: 12,
               fontWeight: FontWeight.w500,
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildRegisterLink() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: _primaryPurple.withOpacity(0.3)),
+      ),
+      child: TextButton(
+        onPressed: () => Navigator.pop(context),
+        child: RichText(
+          text: TextSpan(
+            text: "¿Nuevo en Flixly? ",
+            style: TextStyle(
+              color: Colors.grey[300],
+              fontSize: 16,
+            ),
+            children: [
+              TextSpan(
+                text: "¡Únete aquí! 🎭",
+                style: TextStyle(
+                  color: _primaryPurple,
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  decoration: TextDecoration.underline,
+                  decorationColor: _primaryPurple,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -693,21 +671,34 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: _cardColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          'Recuperar Contraseña',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(Icons.help_outline_rounded, color: _primaryPurple, size: 28),
+            const SizedBox(width: 12),
+            Text(
+              'Recuperar Contraseña',
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+            ),
+          ],
         ),
         content: Text(
-          'Esta función estará disponible próximamente.',
-          style: TextStyle(color: Colors.grey[400]),
+          'Esta función estará disponible próximamente. Por favor contacta al soporte si necesitas ayuda.',
+          style: TextStyle(color: Colors.grey[300], fontSize: 16),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Entendido',
-              style: TextStyle(color: _primaryPurple),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(colors: [_primaryPurple, _accentColor]),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Text(
+                'Entendido',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+              ),
             ),
           ),
         ],
@@ -715,9 +706,10 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
     );
   }
 }
+
 Future<void> login(String correo, String contrasenia, BuildContext context) async {
   if (correo.isEmpty || contrasenia.isEmpty) {
-    _showSnackBar(context, 'Por favor completa todos los campos', isError: true);
+    _showCustomSnackBar(context, 'Por favor completa todos los campos', isError: true);
     return;
   }
 
@@ -732,11 +724,13 @@ Future<void> login(String correo, String contrasenia, BuildContext context) asyn
     final User? user = res.user;
 
     if (user != null) {
-      _showSnackBar(context, '¡Bienvenid@ de vuelta!', isError: false);
+      _showCustomSnackBar(context, '¡Bienvenid@ de vuelta a tu cine personal! 🎬', isError: false);
 
       // Aquí obtienes los valores necesarios para pasar a CategoriasScreen
       int edad = 25; // Este debería ser un valor real de tu base de datos
       List<String> generosFavoritos = ['Acción', 'Comedia']; // Esto también debería venir del usuario
+
+      await Future.delayed(const Duration(seconds: 2));
 
       // Navegación con animación, pasando los parámetros requeridos
       Navigator.pushReplacement(
@@ -752,7 +746,7 @@ Future<void> login(String correo, String contrasenia, BuildContext context) asyn
         ),
       );
     } else {
-      _showSnackBar(context, 'Error: No se pudo iniciar sesión', isError: true);
+      _showCustomSnackBar(context, 'Error: No se pudo iniciar sesión', isError: true);
     }
   } catch (e) {
     String errorMessage = 'Error al iniciar sesión';
@@ -763,35 +757,41 @@ Future<void> login(String correo, String contrasenia, BuildContext context) asyn
       errorMessage = 'Por favor confirma tu correo electrónico.';
     }
 
-    _showSnackBar(context, errorMessage, isError: true);
+    _showCustomSnackBar(context, errorMessage, isError: true);
   }
 }
 
-void _showSnackBar(BuildContext context, String message, {required bool isError}) {
+void _showCustomSnackBar(BuildContext context, String message, {required bool isError}) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       content: Row(
         children: [
-          Icon(
-            isError ? Icons.error_outline : Icons.check_circle_outline,
-            color: Colors.white,
-            size: 20,
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: isError ? Colors.red.withOpacity(0.2) : Colors.green.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              isError ? Icons.movie_filter : Icons.movie_creation_outlined,
+              color: Colors.white,
+              size: 20,
+            ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 12),
           Expanded(
             child: Text(
               message,
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
             ),
           ),
         ],
       ),
-      backgroundColor: isError ? Colors.red[600] : Colors.green[600],
+      backgroundColor: isError ? Colors.red.shade700 : const Color(0xFF6C63FF),
       behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       margin: const EdgeInsets.all(16),
+      duration: const Duration(seconds: 4),
     ),
   );
-} 
-
-    
+}
