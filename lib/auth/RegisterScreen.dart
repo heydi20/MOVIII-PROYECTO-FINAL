@@ -655,24 +655,8 @@ class _RegistroState extends State<Registro> with TickerProviderStateMixin {
                   ),
           ),
         ),
-        const SizedBox(height: 15),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [_primaryPurple.withOpacity(0.8), _accentColor.withOpacity(0.8)],
-            ),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Text(
-            imagen != null ? "🎬 Cambiar foto" : "📸 Tu foto de perfil",
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
+       
+        
       ],
     );
   }
@@ -841,23 +825,26 @@ Widget _buildGenderDropdown() {
                     ),
                   ],
                 )
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Icon(Icons.movie_outlined, color: Colors.white, size: 28),
-                    SizedBox(width: 12),
-                    Text(
-                      "¡COMENZAR MI AVENTURA!",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.0,
-                      ),
-                    ),
-                  ],
-                ),
+         :Row(
+  mainAxisAlignment: MainAxisAlignment.center,
+  children: [
+    const Icon(Icons.movie_outlined, color: Colors.white, size: 28),
+    const SizedBox(width: 12),
+    Flexible(
+      child: Text(
+        "¡COMENZAR MI AVENTURA!",
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.0,
         ),
+      ),
+    ),
+  ],
+)
+        )
       ),
     );
   }
