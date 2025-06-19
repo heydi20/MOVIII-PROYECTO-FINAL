@@ -23,7 +23,7 @@ class _CategoriasScreenState extends State<CategoriasScreen>
       'descripcion': 'Los Vengadores se reúnen para revertir el Snap de Thanos',
       'categoria': 'Acción',
       'trailerId': 'TcMBFSGVi1c',
-      'peliculaId': 'PLl99DlL6b4',
+      'peliculaId': 'https://mega.nz/file/LU9CXTQI#KtZARbbmTXsyk4I2ouZ0YAxSGFnxXlIUslZDdxvGwZE',
     },
     {
       'titulo': 'Dune',
@@ -33,7 +33,7 @@ class _CategoriasScreenState extends State<CategoriasScreen>
           'Un joven heredero viaja al planeta más peligroso del universo',
       'categoria': 'Ciencia Ficción',
       'trailerId': 'n9xhJrPXop4',
-      'peliculaId': 'uPIEn0M8su0',
+      'peliculaId': 'https://mega.nz/file/WAk2FLiC#xAcSaEu_8-ixdpUzHrc0tI1GrMdOeFcgxzE-WbaqXfM',
     },
     {
       'titulo': 'Spider-Man: No Way Home',
@@ -53,7 +53,7 @@ class _CategoriasScreenState extends State<CategoriasScreen>
           'Batman investiga la corrupción en Gotham cuando aparece el Acertijo',
       'categoria': 'Superhéroes',
       'trailerId': 'mqqft2x_Aa4',
-      'peliculaId': 'aS_d0Ayjw4o',
+      'peliculaId': 'https://mega.nz/file/uAkWTK6I#DkORcw5Kl-sMKtpmtH4j5ckZTnvg7B2m5gjxwRf7AX0',
     },
   ];
 

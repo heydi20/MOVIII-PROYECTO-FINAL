@@ -12,6 +12,11 @@ dependencies:
   supabase_flutter: ^2.9.1
   youtube_player_flutter: 9.1.1
   flutter_inappwebview: ^6.0.0-beta.24
+  icons_launcher: ^3.0.1
+  flutter_native_splash: ^2.4.6
+  
+  
+  
 
 
 dev_dependencies:
@@ -23,3 +28,4 @@ flutter:
   uses-material-design: true
   assets:
     - assets/logo.jpg
+    - assets/logo3.png
